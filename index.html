@@ -9,7 +9,6 @@
     :root{
       --bg:#f6fbff; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
       --brand:#0288d1; --brand-2:#0277bd; --ring:rgba(2,136,209,.25);
-      --ok:#059669;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;-webkit-text-size-adjust:100%}
@@ -19,6 +18,7 @@
       color:var(--ink);
       display:flex; justify-content:center; align-items:flex-start;
       min-height:100vh;
+      padding-bottom:64px; /* keep content clear of fixed footer */
     }
 
     /* Canvas */
@@ -30,10 +30,9 @@
       box-shadow:0 10px 24px rgba(0,0,0,.12);
       padding:40px;
       margin:24px;
-      overflow-wrap:break-word;
     }
 
-    /* Header + toggles (centered) */
+    /* Header + toggles */
     .header{ text-align:center; margin-bottom:18px; }
     .header h1{margin:0 0 8px; font-size:2rem; color:#124076}
     .header p{margin:0; color:var(--muted); font-size:1rem}
@@ -68,10 +67,8 @@
       background:#f8fafc; padding:8px; border-radius:10px; border:1px solid #e2e8f0;
       width:100%;
     }
-
-    /* Flexible selects to avoid overflow */
     .seg select{
-      flex:1 1 72px;          /* can shrink or wrap */
+      flex:1 1 72px;
       min-width:64px;
       max-width:120px;
       padding:8px 10px;
@@ -88,7 +85,7 @@
       max-width:800px;
       border:1px solid #e2e8f0; border-radius:12px; background:#fbfdff; padding:20px;
     }
-    /* Shift right only on large screens */
+    /* Shift a bit right on large screens */
     @media(min-width:900px){
       .dates-block{ margin-left:40px; }
     }
@@ -101,7 +98,6 @@
       padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px;
       font-size:.95rem; background:#fff; color:#0f172a;
     }
-    .dates-field input[type="date"]:focus{box-shadow:0 0 0 5px var(--ring); border-color:var(--brand)}
     .dates-field button{
       width:100%; max-width:140px;
       padding:10px 14px; border:none; border-radius:10px; font-weight:600;
@@ -132,36 +128,36 @@
     .result h3{margin:0 0 10px}
     .muted{color:var(--muted)}
 
-    /* Footer */
+    /* Footer: always centered at bottom */
     .site-footer{
-      position:fixed; left:0; right:0; bottom:8px;
-      text-align:center; color:var(--muted); font-size:.9rem;
-      padding:6px 8px;
+      position:fixed;
+      left:0; right:0; bottom:0;
+      width:100%;
+      text-align:center;
+      color:var(--muted);
+      font-size:.9rem;
+      padding:10px 0;
+      background:transparent; /* set to #fff if you want a solid bar */
+      z-index:10;
     }
 
-    /* ===== Mobile optimizations ===== */
+    /* Mobile tweaks */
     @media(max-width:640px){
       .container{ margin:12px; padding:18px; }
       .header h1{font-size:1.5rem}
       .header p{font-size:.95rem}
-      .row{ grid-template-columns: 1fr; }          /* label above inputs */
+      .row{ grid-template-columns: 1fr; }
       .row > label{ margin-bottom:2px; }
       .seg{ padding:8px 6px; gap:6px }
-      .seg select{ flex:1 1 40%; min-width:58px }  /* wider flex on wrap */
-      .dates-block{
-        margin:16px 0 12px;                        /* remove right shift */
-        max-width:100%;
-        padding:14px;
-      }
+      .seg select{ flex:1 1 40%; min-width:58px }
+      .dates-block{ margin:16px 0 12px; max-width:100%; padding:14px; }
       .dates-field input[type="date"], .dates-field button{ max-width:100% }
       .btn{ min-width:104px }
-      /* Footer static to avoid overlap */
-      .site-footer{ position:static; padding:10px 0 18px; }
     }
   </style>
 
   <script>
-    // Optional: disable context menu and common inspect shortcuts like your sample
+    // Optional: disable right-click/inspect like your sample
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.onkeydown = function(e){
       if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J')) || (e.ctrlKey && e.key==='U')) return false;
@@ -220,8 +216,8 @@
       </div>
     </section>
 
-    <!-- Dates subcanvas -->
-    <section id="datesBlock" class="dates-block">
+    <!-- Dates subcanvas (shown when Include dates is checked) -->
+    <section id="datesBlock" class="dates-block" aria-label="Dates">
       <div class="dates-grid">
         <div class="dates-field">
           <label for="sDate">Start date</label>
@@ -237,7 +233,7 @@
     </section>
 
     <!-- Actions -->
-    <section class="actions">
+    <section class="actions" aria-label="Actions">
       <h3>Actions</h3>
       <div class="controls">
         <button class="btn" id="calc">Calculate</button>
@@ -247,7 +243,7 @@
     </section>
 
     <!-- Result -->
-    <section class="result" id="result">
+    <section class="result" id="result" aria-live="polite">
       <h3>Result</h3>
       <div id="resMain" class="muted">Enter values and click <b>Calculate</b>.</div>
       <ul id="resList" style="margin:8px 0 0 18px"></ul>
@@ -255,13 +251,19 @@
     </section>
   </main>
 
-  <div class="site-footer">
+  <footer class="site-footer">
     © 2025 Time Duration Calculator. All rights reserved.
-  </div>
+  </footer>
 
   <script>
     const pad=n=>String(n).padStart(2,'0');
-    function fillRange(sel,start,end){for(let i=start;i<=end;i++){let o=document.createElement('option');o.value=i;o.textContent=pad(i);sel.appendChild(o)}}
+    function fillRange(sel,start,end){
+      for(let i=start;i<=end;i++){
+        const o=document.createElement('option');
+        o.value=i; o.textContent=pad(i);
+        sel.appendChild(o);
+      }
+    }
 
     // DOM refs
     const sH12=document.getElementById('sH12'),sM12=document.getElementById('sM12'),sS12=document.getElementById('sS12'),sAP=document.getElementById('sAP');
@@ -269,23 +271,45 @@
     const sH24=document.getElementById('sH24'),sM24=document.getElementById('sM24'),sS24=document.getElementById('sS24');
     const eH24=document.getElementById('eH24'),eM24=document.getElementById('eM24'),eS24=document.getElementById('eS24');
 
-    [sH12,eH12].forEach(sel=>{for(let i=1;i<=12;i++){let o=document.createElement('option');o.value=i;o.text=i;sel.add(o)}});
+    // Populate selects
+    [sH12,eH12].forEach(sel=>{
+      for(let i=1;i<=12;i++){
+        const o=document.createElement('option'); o.value=i; o.text=i;
+        sel.add(o);
+      }
+    });
     [sM12,sS12,eM12,eS12].forEach(sel=>fillRange(sel,0,59));
     [sH24,eH24].forEach(sel=>fillRange(sel,0,23));
     [sM24,sS24,eM24,eS24].forEach(sel=>fillRange(sel,0,59));
 
-    const start12=document.getElementById('start-12'),end12=document.getElementById('end-12'),start24=document.getElementById('start-24'),end24=document.getElementById('end-24');
-    const withDates=document.getElementById('withDates'),twentyFour=document.getElementById('twentyFour'),datesBlock=document.getElementById('datesBlock');
-    const sDate=document.getElementById('sDate'),eDate=document.getElementById('eDate');
-    const calcBtn=document.getElementById('calc'),swapBtn=document.getElementById('swap'),resetBtn=document.getElementById('reset');
-    const nowStart=document.getElementById('nowStart'),nowEnd=document.getElementById('nowEnd');
-    const resMain=document.getElementById('resMain'),resList=document.getElementById('resList'),note=document.getElementById('note');
+    // Elements for modes & dates
+    const start12=document.getElementById('start-12'),end12=document.getElementById('end-12'),
+          start24=document.getElementById('start-24'),end24=document.getElementById('end-24');
+    const withDates=document.getElementById('withDates'), twentyFour=document.getElementById('twentyFour'),
+          datesBlock=document.getElementById('datesBlock');
+    const sDate=document.getElementById('sDate'), eDate=document.getElementById('eDate');
 
-    function set12h(selH,selM,selS,selAP,d){let h=d.getHours(),ap=h>=12?'PM':'AM';h=h%12;if(h===0)h=12;selH.value=h;selM.value=d.getMinutes();selS.value=d.getSeconds();selAP.value=ap}
-    function set24h(selH,selM,selS,d){selH.value=d.getHours();selM.value=d.getMinutes();selS.value=d.getSeconds()}
-    function from12toSecs(h,m,s,ap){h=+h;m=+m;s=+s;if(ap==='AM'){if(h===12)h=0;}else{if(h!==12)h+=12;}return h*3600+m*60+s}
-    function from24toSecs(h,m,s){return +h*3600+ +m*60+ +s}
+    const calcBtn=document.getElementById('calc'), swapBtn=document.getElementById('swap'), resetBtn=document.getElementById('reset');
+    const nowStart=document.getElementById('nowStart'), nowEnd=document.getElementById('nowEnd');
+    const resMain=document.getElementById('resMain'), resList=document.getElementById('resList'), note=document.getElementById('note');
 
+    // Helpers to set/read times
+    function set12h(selH,selM,selS,selAP,d){
+      let h=d.getHours(), ap=h>=12?'PM':'AM';
+      h=h%12; if(h===0) h=12;
+      selH.value=h; selM.value=d.getMinutes(); selS.value=d.getSeconds(); selAP.value=ap;
+    }
+    function set24h(selH,selM,selS,d){
+      selH.value=d.getHours(); selM.value=d.getMinutes(); selS.value=d.getSeconds();
+    }
+    function from12toSecs(h,m,s,ap){
+      h=+h; m=+m; s=+s;
+      if(ap==='AM'){ if(h===12) h=0; } else { if(h!==12) h+=12; }
+      return h*3600 + m*60 + s;
+    }
+    function from24toSecs(h,m,s){ return +h*3600 + +m*60 + +s; }
+
+    // Toggle modes
     function toggleMode(){
       const is24=twentyFour.checked;
       start12.style.display=is24?'none':'flex';
@@ -297,30 +321,46 @@
     twentyFour.addEventListener('change',toggleMode);
     withDates.addEventListener('change',toggleDates);
 
-    function setNowStart(){let d=new Date();set12h(sH12,sM12,sS12,sAP,d);set24h(sH24,sM24,sS24,d);sDate.value=d.toISOString().slice(0,10)}
-    function setNowEnd(){let d=new Date();set12h(eH12,eM12,eS12,eAP,d);set24h(eH24,eM24,eS24,d);eDate.value=d.toISOString().slice(0,10)}
+    // Now buttons set current date/time
+    function setNowStart(){
+      const d=new Date();
+      set12h(sH12,sM12,sS12,sAP,d); set24h(sH24,sM24,sS24,d);
+      sDate.value=d.toISOString().slice(0,10);
+    }
+    function setNowEnd(){
+      const d=new Date();
+      set12h(eH12,eM12,eS12,eAP,d); set24h(eH24,eM24,eS24,d);
+      eDate.value=d.toISOString().slice(0,10);
+    }
     nowStart.addEventListener('click',setNowStart);
     nowEnd.addEventListener('click',setNowEnd);
 
+    // Calculate
     calcBtn.addEventListener('click',()=>{
       const is24=twentyFour.checked, useDates=withDates.checked;
-      const sSecs=!is24?from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value):from24toSecs(sH24.value,sM24.value,sS24.value);
-      const eSecs=!is24?from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value):from24toSecs(eH24.value,eM24.value,eS24.value);
+      const sSecs=!is24 ? from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value)
+                        : from24toSecs(sH24.value,sM24.value,sS24.value);
+      const eSecs=!is24 ? from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value)
+                        : from24toSecs(eH24.value,eM24.value,eS24.value);
 
       let total;
       if(useDates && sDate.value && eDate.value){
         const sd=new Date(sDate.value+"T00:00:00"), ed=new Date(eDate.value+"T00:00:00");
         total=Math.abs((ed.getTime()/1000+eSecs)-(sd.getTime()/1000+sSecs));
       }else{
-        total=eSecs-sSecs; if(total<0) total+=86400;
+        total=eSecs-sSecs; if(total<0) total+=86400; // wrap across midnight
       }
 
       const h=Math.floor(total/3600), m=Math.floor((total%3600)/60), s=Math.floor(total%60);
       resMain.innerHTML="Duration calculated.";
-      resList.innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li><li>${(total/3600).toFixed(4)} hours</li><li>${Math.round(total/60)} minutes</li><li>${total} seconds</li>`;
+      resList.innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li>
+                         <li>${(total/3600).toFixed(4)} hours</li>
+                         <li>${Math.round(total/60)} minutes</li>
+                         <li>${total} seconds</li>`;
       note.textContent=!useDates && eSecs<sSecs ? "Note: End time treated as next day." : "";
     });
 
+    // Swap
     swapBtn.addEventListener('click',()=>{
       [sH12.value,eH12.value]=[eH12.value,sH12.value];
       [sM12.value,eM12.value]=[eM12.value,sM12.value];
@@ -332,17 +372,17 @@
       if(withDates.checked){ [sDate.value,eDate.value]=[eDate.value,sDate.value]; }
     });
 
+    // Reset
     resetBtn.addEventListener('click',()=>location.reload());
 
-    // init current times
+    // Initialize times and modes
     (function initTimes(){
       const d=new Date();
-      set12h(sH12,sM12,sS12,sAP,d);
-      set24h(sH24,sM24,sS24,d);
-      set12h(eH12,eM12,eS12,eAP,d);
-      set24h(eH24,eM24,eS24,d);
+      set12h(sH12,sM12,sS12,sAP,d); set24h(sH24,sM24,sS24,d);
+      set12h(eH12,eM12,eS12,eAP,d); set24h(eH24,eM24,eS24,d);
     })();
-    toggleMode(); toggleDates();
+    toggleMode();
+    toggleDates();
   </script>
 </body>
 </html>
