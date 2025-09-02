@@ -5,20 +5,12 @@
   <title>Time Duration Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Favicon / Social -->
   <link rel="icon" type="image/png" href="favicon.png" />
   <meta property="og:title" content="Time Duration Calculator — Hours, Minutes & Seconds" />
-  <meta property="og:description" content="Calculate accurate time differences with AM/PM or 24-hour inputs. Includes 'Now', swap, breaks, and date support." />
+  <meta property="og:description" content="Calculate accurate time differences with AM/PM or 24-hour inputs. Includes 'Now', swap, and date support." />
   <meta property="og:image" content="og-image.png" />
   <meta property="og:url" content="https://jk-verma.github.io/time-duration-calculator/" />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Time Duration Calculator — Hours, Minutes & Seconds" />
-  <meta name="twitter:description" content="Quickly find the difference between two times (and dates) with optional break deductions." />
-  <meta name="twitter:image" content="og-image.png" />
-
-  <!-- Google AdSense (optional—remove if not needed) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2194565709125075" crossorigin="anonymous"></script>
 
   <style>
     :root{
@@ -42,14 +34,15 @@
       padding:24px;
     }
     .container{
-      width:100%; max-width:780px; background:var(--card);
+      width:100%; max-width:980px; /* increased canvas */
+      background:var(--card);
       border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.12);
-      padding:24px;
+      padding:32px; /* more padding */
     }
-    h1{margin:0 0 6px; font-size:1.6rem; color:#124076}
+    h1{margin:0 0 6px; font-size:1.8rem; color:#124076}
     p.subtitle{margin:0 0 18px; color:var(--muted)}
     .grid{
-      display:grid; gap:12px;
+      display:grid; gap:20px;
       grid-template-columns: 1fr;
     }
     .row{
@@ -66,7 +59,7 @@
       border:1px solid #e2e8f0;
     }
     label{font-weight:600}
-    select, input[type="number"], input[type="text"]{
+    select, input[type="number"], input[type="text"], input[type="date"]{
       padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px;
       min-width:64px; font-size:.95rem; background:#fff; color:var(--ink);
       outline:none;
@@ -104,20 +97,14 @@
     }
     details summary{cursor:pointer; font-weight:600}
     .footer{
-      margin-top:18px; text-align:center; color:var(--muted); font-size:.9rem
+      margin-top:24px; text-align:center; color:var(--muted); font-size:.9rem
     }
-    .badge{display:inline-flex; gap:8px; align-items:center}
-    .warn{color:var(--warn); font-weight:600}
-    .ok{color:var(--ok); font-weight:600}
-    .tiny{font-size:.85rem}
-    .spacer{height:6px}
     @media(min-width:720px){
       .grid{grid-template-columns: 1fr 1fr}
     }
   </style>
 
   <script>
-    /* Light protection (same pattern as your sample) */
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.onkeydown = function(e){
       if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J')) || (e.ctrlKey && e.key==='U')) return false;
@@ -127,53 +114,37 @@
 <body>
   <main class="container" role="main">
     <h1>Time Duration Calculator</h1>
-    <p class="subtitle">Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, optional break deduction, and date-aware mode.</p>
+    <p class="subtitle">Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, swap, and date-aware mode.</p>
 
-    <!-- MODE TOGGLE -->
-    <div class="inline" aria-label="Input mode">
-      <span class="pill" title="Like common time calculators"><span>⏱️</span> Time-only</span>
-      <label class="inline tiny"><input type="checkbox" id="withDates" /> Include dates</label>
-      <label class="inline tiny"><input type="checkbox" id="twentyFour" /> Use 24-hour inputs</label>
+    <div class="inline">
+      <span class="pill"><span>⏱️</span> Time-only</span>
+      <label class="inline"><input type="checkbox" id="withDates" /> Include dates</label>
+      <label class="inline"><input type="checkbox" id="twentyFour" /> Use 24-hour inputs</label>
     </div>
 
-    <div class="spacer"></div>
-
-    <section class="grid" aria-label="Inputs">
+    <section class="grid">
       <!-- START -->
       <div>
         <div class="row">
           <label>Start</label>
           <div class="inline">
             <div id="start-12" class="seg">
-              <select id="sH12" aria-label="Start hour (1 to 12)"></select> :
-              <select id="sM12" aria-label="Start minute (00 to 59)"></select> :
-              <select id="sS12" aria-label="Start second (00 to 59)"></select>
-              <select id="sAP" aria-label="Start AM or PM">
-                <option>AM</option><option>PM</option>
-              </select>
+              <select id="sH12"></select> :
+              <select id="sM12"></select> :
+              <select id="sS12"></select>
+              <select id="sAP"><option>AM</option><option>PM</option></select>
             </div>
             <div id="start-24" class="seg" style="display:none">
-              <select id="sH24" aria-label="Start hour (00 to 23)"></select> :
-              <select id="sM24" aria-label="Start minute (00 to 59)"></select> :
-              <select id="sS24" aria-label="Start second (00 to 59)"></select>
+              <select id="sH24"></select> :
+              <select id="sM24"></select> :
+              <select id="sS24"></select>
             </div>
-            <button class="btn secondary" id="nowStart" title="Use current system time">Now</button>
+            <button class="btn secondary" id="nowStart">Now</button>
           </div>
         </div>
-
-        <div class="row">
-          <label class="muted">Break (optional)</label>
-          <div class="inline seg" title="Subtract this from the raw duration">
-            <input type="number" id="breakMin" min="0" step="1" placeholder="Minutes" />
-            <input type="number" id="breakSec" min="0" step="1" placeholder="Seconds" />
-          </div>
-        </div>
-
         <div class="row dates" style="display:none">
           <label>Start date</label>
-          <div class="inline seg">
-            <input type="date" id="sDate" />
-          </div>
+          <div class="inline seg"><input type="date" id="sDate" /></div>
         </div>
       </div>
 
@@ -183,65 +154,48 @@
           <label>End</label>
           <div class="inline">
             <div id="end-12" class="seg">
-              <select id="eH12" aria-label="End hour (1 to 12)"></select> :
-              <select id="eM12" aria-label="End minute (00 to 59)"></select> :
-              <select id="eS12" aria-label="End second (00 to 59)"></select>
-              <select id="eAP" aria-label="End AM or PM">
-                <option>AM</option><option>PM</option>
-              </select>
+              <select id="eH12"></select> :
+              <select id="eM12"></select> :
+              <select id="eS12"></select>
+              <select id="eAP"><option>AM</option><option>PM</option></select>
             </div>
             <div id="end-24" class="seg" style="display:none">
-              <select id="eH24" aria-label="End hour (00 to 23)"></select> :
-              <select id="eM24" aria-label="End minute (00 to 59)"></select> :
-              <select id="eS24" aria-label="End second (00 to 59)"></select>
+              <select id="eH24"></select> :
+              <select id="eM24"></select> :
+              <select id="eS24"></select>
             </div>
-            <button class="btn secondary" id="nowEnd" title="Use current system time">Now</button>
+            <button class="btn secondary" id="nowEnd">Now</button>
           </div>
         </div>
-
         <div class="row">
-          <label class="muted">Actions</label>
+          <label>Actions</label>
           <div class="controls">
             <button class="btn" id="calc">Calculate</button>
-            <button class="btn secondary" id="swap" title="Swap start and end">Swap</button>
+            <button class="btn secondary" id="swap">Swap</button>
             <button class="btn ghost" id="reset">Reset</button>
           </div>
         </div>
-
         <div class="row dates" style="display:none">
           <label>End date</label>
-          <div class="inline seg">
-            <input type="date" id="eDate" />
-          </div>
+          <div class="inline seg"><input type="date" id="eDate" /></div>
         </div>
       </div>
     </section>
 
-    <details>
-      <summary>Link & share options</summary>
-      <div class="inline" style="margin-top:8px">
-        <button class="btn secondary" id="copyLink">Copy URL with parameters</button>
-        <span class="muted tiny">URL encodes your current inputs so you can reopen the same calculation.</span>
-      </div>
-    </details>
-
-    <section class="result" id="result" aria-live="polite">
+    <section class="result" id="result">
       <h3>Result</h3>
       <div id="resMain" class="muted">Enter values and click <b>Calculate</b>.</div>
       <ul id="resList" style="margin:8px 0 0 18px"></ul>
-      <div id="note" class="tiny muted"></div>
+      <div id="note" class="muted"></div>
     </section>
 
     <div class="footer">
-      &copy; 2025 Time Duration Calculator. Built for GitHub Pages. |
-      <span class="badge">Inspired by common patterns like AM/PM selectors and “Now” buttons seen on popular calculators. <span class="muted">Ref:</span> calculator.net/time-duration. </span>
+      © 2025 Time Duration Calculator. All rights reserved.
     </div>
   </main>
 
   <script>
-    // ---------- Helpers ----------
-    const pad = (n)=> String(n).padStart(2,'0');
-
+    const pad = n=>String(n).padStart(2,'0');
     function fillRange(sel, start, end){
       for(let i=start;i<=end;i++){
         const opt=document.createElement('option');
@@ -249,275 +203,36 @@
         sel.appendChild(opt);
       }
     }
-    function set12h(selH, selM, selS, selAP, date){
-      let h = date.getHours();
-      const ap = h>=12 ? 'PM':'AM';
-      h = h%12; if(h===0) h=12;
-      selH.value = h;
-      selM.value = date.getMinutes();
-      selS.value = date.getSeconds();
-      selAP.value = ap;
-    }
-    function set24h(selH, selM, selS, date){
-      selH.value = date.getHours();
-      selM.value = date.getMinutes();
-      selS.value = date.getSeconds();
-    }
-    function from12toSecs(h, m, s, ap){
-      h = Number(h); m = Number(m); s = Number(s);
-      if (ap === 'AM') { if (h === 12) h = 0; }
-      else { if (h !== 12) h += 12; }
-      return h*3600 + m*60 + s;
-    }
-    function from24toSecs(h, m, s){
-      return Number(h)*3600 + Number(m)*60 + Number(s);
-    }
-    function parseQS(){
-      const p = new URLSearchParams(location.search);
-      // Supports calculator.net-style params
-      // starthour, startmin, startsec, startunit=a/p ; endhour, endmin, endsec, endunit=a/p
-      const obj = {};
-      for (const [k,v] of p.entries()) obj[k]=v;
-      return obj;
-    }
-    function applyQS(q){
-      // 12-hour if any a/p unit present
-      const hasAP = q.startunit || q.endunit;
-      if (hasAP) { twentyFour.checked = false; toggleMode(); }
-
-      // Start
-      if (q.starthour){ const h = String(Number(q.starthour)%12 || 12); sH12.value=h; }
-      if (q.startmin) sM12.value=Number(q.startmin);
-      if (q.startsec) sS12.value=Number(q.startsec);
-      if (q.startunit){ sAP.value = (q.startunit.toLowerCase().startsWith('p')?'PM':'AM'); }
-
-      // End
-      if (q.endhour){ const h = String(Number(q.endhour)%12 || 12); eH12.value=h; }
-      if (q.endmin) eM12.value=Number(q.endmin);
-      if (q.endsec) eS12.value=Number(q.endsec);
-      if (q.endunit){ eAP.value = (q.endunit.toLowerCase().startsWith('p')?'PM':'AM'); }
-
-      // Dates (our own params)
-      if (q.sdate) sDate.value = q.sdate;
-      if (q.edate) eDate.value = q.edate;
-      if (q.withdates === '1'){ withDates.checked = true; toggleDates(); }
-      if (q.h24 === '1'){ twentyFour.checked = true; toggleMode(); }
-      if (q.breakmin) breakMin.value = Number(q.breakmin);
-      if (q.breaksec) breakSec.value = Number(q.breaksec);
-    }
-
-    // ---------- DOM refs ----------
-    const sH12 = document.getElementById('sH12');
-    const sM12 = document.getElementById('sM12');
-    const sS12 = document.getElementById('sS12');
-    const sAP  = document.getElementById('sAP');
-    const eH12 = document.getElementById('eH12');
-    const eM12 = document.getElementById('eM12');
-    const eS12 = document.getElementById('eS12');
-    const eAP  = document.getElementById('eAP');
-
-    const sH24 = document.getElementById('sH24');
-    const sM24 = document.getElementById('sM24');
-    const sS24 = document.getElementById('sS24');
-    const eH24 = document.getElementById('eH24');
-    const eM24 = document.getElementById('eM24');
-    const eS24 = document.getElementById('eS24');
-
-    const start12 = document.getElementById('start-12');
-    const end12   = document.getElementById('end-12');
-    const start24 = document.getElementById('start-24');
-    const end24   = document.getElementById('end-24');
-
-    const twentyFour = document.getElementById('twentyFour');
-    const withDates  = document.getElementById('withDates');
-    const sDate = document.getElementById('sDate');
-    const eDate = document.getElementById('eDate');
-
-    const nowStart = document.getElementById('nowStart');
-    const nowEnd   = document.getElementById('nowEnd');
-    const swapBtn  = document.getElementById('swap');
-    const resetBtn = document.getElementById('reset');
-    const calcBtn  = document.getElementById('calc');
-    const copyBtn  = document.getElementById('copyLink');
-
-    const resMain = document.getElementById('resMain');
-    const resList = document.getElementById('resList');
-    const note    = document.getElementById('note');
-
-    // ---------- Populate selects ----------
-    // 12h hours 1..12
-    for(let i=1;i<=12;i++){
-      [sH12,eH12].forEach(sel=>{
-        const o=document.createElement('option'); o.value=i; o.textContent=String(i);
-        sel.appendChild(o.cloneNode(true));
-      });
-    }
-    // minutes/seconds 0..59
-    [sM12, sS12, eM12, eS12].forEach(sel=>fillRange(sel,0,59));
-    // 24h hours 0..23
-    [sH24, eH24].forEach(sel=>fillRange(sel,0,23));
-    // minutes/seconds 0..59 for 24h
-    [sM24, sS24, eM24, eS24].forEach(sel=>fillRange(sel,0,59));
-
-    // ---------- Default to current time ----------
-    function setNowStart(){
-      const d = new Date();
-      set12h(sH12,sM12,sS12,sAP,d);
-      set24h(sH24,sM24,sS24,d);
-      if (!sDate.value) sDate.value = d.toISOString().slice(0,10);
-    }
-    function setNowEnd(){
-      const d = new Date();
-      set12h(eH12,eM12,eS12,eAP,d);
-      set24h(eH24,eM24,eS24,d);
-      if (!eDate.value) eDate.value = d.toISOString().slice(0,10);
-    }
-    setNowStart(); setNowEnd();
-
-    // ---------- Toggles ----------
-    function toggleMode(){
-      const is24 = twentyFour.checked;
-      start12.style.display = is24 ? 'none':'flex';
-      end12.style.display   = is24 ? 'none':'flex';
-      start24.style.display = is24 ? 'flex':'none';
-      end24.style.display   = is24 ? 'flex':'none';
-    }
-    function toggleDates(){
-      const show = withDates.checked;
-      document.querySelectorAll('.dates').forEach(el=>{ el.style.display = show ? 'grid':'none'; });
-    }
-    twentyFour.addEventListener('change', toggleMode);
-    withDates.addEventListener('change', toggleDates);
-
-    // ---------- Actions ----------
-    nowStart.addEventListener('click', setNowStart);
-    nowEnd.addEventListener('click', setNowEnd);
-    resetBtn.addEventListener('click', ()=>{
-      location.search = ""; // easiest reset (keeps page fresh)
+    const sH12=document.getElementById('sH12'),sM12=document.getElementById('sM12'),sS12=document.getElementById('sS12'),sAP=document.getElementById('sAP');
+    const eH12=document.getElementById('eH12'),eM12=document.getElementById('eM12'),eS12=document.getElementById('eS12'),eAP=document.getElementById('eAP');
+    const sH24=document.getElementById('sH24'),sM24=document.getElementById('sM24'),sS24=document.getElementById('sS24');
+    const eH24=document.getElementById('eH24'),eM24=document.getElementById('eM24'),eS24=document.getElementById('eS24');
+    [sH12,eH12].forEach(sel=>{for(let i=1;i<=12;i++){let o=document.createElement('option');o.value=i;o.text=i;sel.add(o)}});
+    [sM12,sS12,eM12,eS12].forEach(sel=>fillRange(sel,0,59));
+    [sH24,eH24].forEach(sel=>fillRange(sel,0,23));
+    [sM24,sS24,eM24,eS24].forEach(sel=>fillRange(sel,0,59));
+    const start12=document.getElementById('start-12'),end12=document.getElementById('end-12'),start24=document.getElementById('start-24'),end24=document.getElementById('end-24');
+    const twentyFour=document.getElementById('twentyFour'),withDates=document.getElementById('withDates'),sDate=document.getElementById('sDate'),eDate=document.getElementById('eDate');
+    function toggleMode(){let is24=twentyFour.checked;start12.style.display=is24?'none':'flex';end12.style.display=is24?'none':'flex';start24.style.display=is24?'flex':'none';end24.style.display=is24?'flex':'none';}
+    function toggleDates(){let show=withDates.checked;document.querySelectorAll('.dates').forEach(el=>{el.style.display=show?'grid':'none'})}
+    twentyFour.addEventListener('change',toggleMode);withDates.addEventListener('change',toggleDates);
+    function from12(h,m,s,ap){h=+h;m=+m;s=+s;if(ap==='AM'){if(h===12)h=0;}else{if(h!==12)h+=12;}return h*3600+m*60+s}
+    function from24(h,m,s){return +h*3600+ +m*60+ +s}
+    document.getElementById('calc').addEventListener('click',()=>{
+      let is24=twentyFour.checked,useDates=withDates.checked;
+      let sSecs=!is24?from12(sH12.value,sM12.value,sS12.value,sAP.value):from24(sH24.value,sM24.value,sS24.value);
+      let eSecs=!is24?from12(eH12.value,eM12.value,eS12.value,eAP.value):from24(eH24.value,eM24.value,eS24.value);
+      let total; if(useDates&&sDate.value&&eDate.value){let sd=new Date(sDate.value+"T00:00:00"),ed=new Date(eDate.value+"T00:00:00");total=Math.abs((ed.getTime()/1000+eSecs)-(sd.getTime()/1000+sSecs))}else{total=eSecs-sSecs;if(total<0)total+=86400}
+      const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=Math.floor(total%60);
+      document.getElementById('resMain').innerHTML="Duration calculated.";
+      document.getElementById('resList').innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li><li>${(total/3600).toFixed(4)} hours</li><li>${Math.round(total/60)} minutes</li><li>${total} seconds</li>`;
+      document.getElementById('note').textContent=!useDates&&eSecs<sSecs?"Note: End time treated as next day.":"";
     });
-    swapBtn.addEventListener('click', ()=>{
-      const is24 = twentyFour.checked;
-      if (!is24){
-        [sH12.value, eH12.value] = [eH12.value, sH12.value];
-        [sM12.value, eM12.value] = [eM12.value, sM12.value];
-        [sS12.value, eS12.value] = [eS12.value, sS12.value];
-        [sAP.value,  eAP.value ] = [eAP.value,  sAP.value ];
-      }else{
-        [sH24.value, eH24.value] = [eH24.value, sH24.value];
-        [sM24.value, eM24.value] = [eM24.value, sM24.value];
-        [sS24.value, eS24.value] = [eS24.value, sS24.value];
-      }
-      if (withDates.checked){
-        [sDate.value, eDate.value] = [eDate.value, sDate.value];
-      }
-    });
-
-    calcBtn.addEventListener('click', ()=>{
-      const is24 = twentyFour.checked;
-      const useDates = withDates.checked;
-
-      // Read inputs
-      let sSecs, eSecs;
-      if (!is24){
-        sSecs = from12toSecs(sH12.value, sM12.value, sS12.value, sAP.value);
-        eSecs = from12toSecs(eH12.value, eM12.value, eS12.value, eAP.value);
-      }else{
-        sSecs = from24toSecs(sH24.value, sM24.value, sS24.value);
-        eSecs = from24toSecs(eH24.value, eM24.value, eS24.value);
-      }
-
-      // When dates are included, compute absolute difference using Date objects
-      let totalSeconds;
-      if (useDates && sDate.value && eDate.value){
-        const sD = new Date(sDate.value + "T00:00:00");
-        const eD = new Date(eDate.value + "T00:00:00");
-
-        const sAbs = sD.getTime()/1000 + sSecs;
-        const eAbs = eD.getTime()/1000 + eSecs;
-        totalSeconds = Math.abs(eAbs - sAbs); // absolute between instants
-      }else{
-        // time-only mode: if end < start, assume next day (like many calculators)
-        // (calculator.plus and others treat earlier end as next day)
-        totalSeconds = eSecs - sSecs;
-        if (totalSeconds < 0) totalSeconds += 24*3600;
-      }
-
-      const brk = (Number(breakMin.value||0)*60) + Number(breakSec.value||0);
-      const raw = totalSeconds;
-      const net = Math.max(0, raw - brk);
-
-      const fmt = (secs)=>{
-        const h = Math.floor(secs/3600);
-        const m = Math.floor((secs%3600)/60);
-        const s = Math.floor(secs%60);
-        return `${h}h ${pad(m)}m ${pad(s)}s`;
-      };
-      const decimalHours = (secs)=> (secs/3600);
-
-      // Render
-      resMain.innerHTML = `
-        <span class="ok">Calculated.</span> ${useDates?'(date-aware)':'(time-only)'}
-      `;
-      resList.innerHTML = `
-        <li><b>Raw duration:</b> ${fmt(raw)} (${decimalHours(raw).toFixed(4)} hours)</li>
-        <li><b>Break deducted:</b> ${brk>0 ? fmt(brk) : '—'}</li>
-        <li><b>Net duration:</b> ${fmt(net)} (<b>${decimalHours(net).toFixed(4)} hours</b>)</li>
-        <li><b>Also in minutes:</b> ${Math.round(net/60)} minutes</li>
-        <li><b>Also in seconds:</b> ${net} seconds</li>
-      `;
-      note.textContent = (!useDates && (eSecs < sSecs))
-        ? "Note: End time was earlier than start time, treated as next day."
-        : "";
-    });
-
-    copyBtn.addEventListener('click', async ()=>{
-      const params = new URLSearchParams();
-      const is24 = twentyFour.checked;
-
-      if (!is24){
-        params.set('starthour', sH12.value);
-        params.set('startmin',  sM12.value);
-        params.set('startsec',  sS12.value);
-        params.set('startunit', sAP.value[0].toLowerCase()); // a/p
-        params.set('endhour', eH12.value);
-        params.set('endmin',  eM12.value);
-        params.set('endsec',  eS12.value);
-        params.set('endunit', eAP.value[0].toLowerCase());
-      }else{
-        // Store as 24h; still map to params for reproducibility (h24=1)
-        params.set('starthour', sH24.value);
-        params.set('startmin',  sM24.value);
-        params.set('startsec',  sS24.value);
-        params.set('endhour',   eH24.value);
-        params.set('endmin',    eM24.value);
-        params.set('endsec',    eS24.value);
-        params.set('h24', '1');
-      }
-
-      if (withDates.checked){
-        if (sDate.value) params.set('sdate', sDate.value);
-        if (eDate.value) params.set('edate', eDate.value);
-        params.set('withdates','1');
-      }
-      if (breakMin.value) params.set('breakmin', breakMin.value);
-      if (breakSec.value) params.set('breaksec', breakSec.value);
-
-      const url = `${location.origin}${location.pathname}?${params.toString()}`;
-      try{
-        await navigator.clipboard.writeText(url);
-        resMain.innerHTML = `<span class="ok">Copied sharable URL to clipboard.</span>`;
-      }catch{
-        resMain.innerHTML = `<span class="warn">Clipboard blocked. Manually copy from address bar after clicking Calculate.</span>`;
-        history.replaceState(null,'',url);
-      }
-    });
-
-    // Show/hide segments initially according to URL, then compute if asked
-    applyQS(parseQS());
-
-    // If the incoming URL exactly matches calculator.net example, prefill and auto-calc
-    // Example given: ?starthour=1&startmin=00&startsec=0&startunit=p&endhour=6&endmin=15&endsec=0&endunit=p&ctype=1&x=Calculate
-    // We ignore ctype/x but keep values and stay ready to calculate.
+    document.getElementById('swap').addEventListener('click',()=>{[sH12.value,eH12.value]=[eH12.value,sH12.value];[sM12.value,eM12.value]=[eM12.value,sM12.value];[sS12.value,eS12.value]=[eS12.value,sS12.value];[sAP.value,eAP.value]=[eAP.value,sAP.value];[sH24.value,eH24.value]=[eH24.value,sH24.value];[sM24.value,eM24.value]=[eM24.value,sM24.value];[sS24.value,eS24.value]=[eS24.value,sS24.value];if(withDates.checked){[sDate.value,eDate.value]=[eDate.value,sDate.value]}});
+    document.getElementById('reset').addEventListener('click',()=>location.reload());
+    document.getElementById('nowStart').addEventListener('click',()=>{let d=new Date();sH12.value=d.getHours()%12||12;sM12.value=d.getMinutes();sS12.value=d.getSeconds();sAP.value=d.getHours()>=12?'PM':'AM';sH24.value=d.getHours();sM24.value=d.getMinutes();sS24.value=d.getSeconds();sDate.value=d.toISOString().slice(0,10)});
+    document.getElementById('nowEnd').addEventListener('click',()=>{let d=new Date();eH12.value=d.getHours()%12||12;eM12.value=d.getMinutes();eS12.value=d.getSeconds();eAP.value=d.getHours()>=12?'PM':'AM';eH24.value=d.getHours();eM24.value=d.getMinutes();eS24.value=d.getSeconds();eDate.value=d.toISOString().slice(0,10)});
+    toggleMode();toggleDates();
   </script>
 </body>
 </html>
