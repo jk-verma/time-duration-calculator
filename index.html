@@ -7,215 +7,166 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <style>
     :root{
-      --bg: #f5f9ff;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --muted: #64748b;
-      --brand: #0ea5e9;
-      --brand-2: #0284c7;
-      --ring: rgba(14,165,233,.25);
-      --border: #e2e8f0;
-      --soft: #f8fafc;
-      --shadow: 0 4px 16px rgba(2,6,23,.08);
-      --radius: 14px;
-      --pad: 22px;
-      --gap: 10px;
-      --gap-lg: 16px;
-      --btn-h: 38px;
+      --bg:#f6fbff; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+      --brand:#0288d1; --brand-2:#0277bd; --ring:rgba(2,136,209,.25);
+      --ok:#059669; --warn:#b45309;
     }
     *{box-sizing:border-box}
-    html, body { height: 100%; margin: 0; }
+    html,body{height:100%;margin:0}
     body{
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      color: var(--ink);
-      background: radial-gradient(1200px 600px at 50% -10%, #e0f2fe 0%, #fff 65%) fixed;
-      display: flex; justify-content: center; align-items: flex-start;
-      min-height: 100vh;
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:linear-gradient(to bottom,#e0f7fa,#ffffff);
+      color:var(--ink);
+      display:flex; justify-content:center; align-items:flex-start;
+      min-height:100vh;
     }
     .container{
-      width: 100%;
-      max-width: 960px;              /* compact width */
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px 22px 72px;
-      margin: 16px;
+      width:100%; max-width:1100px; /* wider canvas */
+      background:var(--card);
+      border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.12);
+      padding:40px; /* more padding */
+      margin:24px;
     }
 
-    /* Header & toggles */
-    .header{ text-align: center; margin-bottom: 8px; }
-    .title{ margin: 0 0 4px; font-size: 1.6rem; color:#124076; letter-spacing:.2px; }
-    .subtitle{ margin: 0; color: var(--muted); font-size: .98rem; }
+    /* Centered header + toggles */
+    .header{ text-align:center; margin-bottom:18px; }
+    .header h1{margin:0 0 8px; font-size:2rem; color:#124076}
+    .header p{margin:0; color:var(--muted); font-size:1rem}
     .toggles{
-      display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap;
-      margin-top: 10px; border: 1px dashed var(--border); padding: 8px 10px; border-radius: 999px;
-      background: #f9fbff;
+      display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center;
+      margin-top:14px;
     }
-    .chip{
-      display: inline-flex; align-items: center; gap: 6px;
-      border: 1px solid #bae6fd; color: #075985; background: #ecfeff;
-      padding: 6px 10px; border-radius: 999px; font-weight: 600; font-size: .92rem;
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      background:#ecfeff; color:#0c4a6e; border:1px solid #bae6fd;
+      padding:8px 12px; border-radius:999px; font-weight:600
     }
-    .toggle{ display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); font-size: .92rem; }
-    .toggle input{ transform: translateY(1px); }
+    .toggle{ display:inline-flex; align-items:center; gap:8px; font-weight:600; color:#0f172a; }
 
-    /* Time inputs */
+    /* Inputs grid */
     .grid{
-      display: grid; gap: 14px; grid-template-columns: 1fr;
-      margin-top: 14px;
+      display:grid; gap:20px; grid-template-columns: 1fr;
+      margin-top:18px;
     }
-    @media (min-width: 720px){ .grid{ grid-template-columns: 1fr 1fr; } }
-    .row{
-      display: grid; gap: 8px; grid-template-columns: 110px 1fr; align-items: center;
-    }
-    label{ font-weight: 600; }
-    .inline{ display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    @media(min-width:720px){ .grid{grid-template-columns:1fr 1fr} }
+    .row{ display:grid; gap:8px; grid-template-columns: 120px 1fr; align-items:center; }
+    label{font-weight:600}
+    .inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .seg{
-      display: flex; gap: 6px; align-items: center;
-      background: var(--soft); padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border);
+      display:flex; gap:6px; align-items:center;
+      background:#f8fafc; padding:8px; border-radius:10px; border:1px solid #e2e8f0;
     }
-    select{
-      padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px;
-      min-width: 58px; font-size: .94rem; background: #fff; color: var(--ink);
-      outline: none; height: var(--btn-h);
+    select, input[type="date"]{
+      padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px;
+      min-width:64px; font-size:.95rem; background:#fff; color:var(--ink);
+      outline:none;
     }
-    select:focus{ box-shadow: 0 0 0 4px var(--ring); border-color: var(--brand); }
+    select:focus, input[type="date"]:focus{box-shadow:0 0 0 5px var(--ring); border-color:var(--brand)}
 
-    /* Dates subcanvas (right-shift, compact) */
+    /* Dates block */
     .dates-block{
-      display: none; /* toggled via JS */
-      margin: 14px auto 8px;
-      max-width: 700px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fbfdff;
-      padding: 14px;
-      margin-left: 28px;  /* slight right shift as requested */
+      display:none;
+      margin:20px auto 12px;
+      max-width:800px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#fbfdff;
+      padding:20px;
+      margin-left:40px; /* shift slightly right */
     }
-    .dates-grid{ display: grid; gap: 14px; grid-template-columns: 1fr; }
-    @media (min-width: 600px){ .dates-grid{ grid-template-columns: 1fr 1fr; } }
-    .dates-field{
-      display: grid; gap: 8px;
-      grid-template-rows: auto auto auto; /* Label, input, Now */
-      justify-items: center;
-    }
-    .dates-field label{ font-weight: 600; }
-    .dates-field input[type="date"]{
-      width: 100%; max-width: 200px;
-      height: var(--btn-h);
-      padding: 6px 8px; text-align: center;
-      border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: var(--ink);
-      outline: none;
-    }
-    .dates-field input[type="date"]:focus{ box-shadow: 0 0 0 4px var(--ring); border-color: var(--brand); }
-    .dates-field .btn{ width: 120px; }
+    .dates-grid{ display:grid; gap:20px; grid-template-columns:1fr; }
+    @media(min-width:600px){ .dates-grid{grid-template-columns:1fr 1fr} }
+    .dates-field{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .dates-field label{font-weight:600}
+    .dates-field input[type="date"]{width:100%; max-width:200px; text-align:center}
+    .dates-field button{width:100%; max-width:120px}
 
     /* Actions */
-    .actions{ text-align: center; margin-top: 12px; margin-bottom: 6px; }
-    .actions h3{ margin: 0 0 8px; font-size: 1.05rem; }
-    .controls{ display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .actions{ text-align:center; margin-top:20px; margin-bottom:12px; }
+    .actions h3{margin:0 0 10px}
+    .controls{display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center}
     .btn{
-      appearance: none; border: none; cursor: pointer; user-select: none;
-      padding: 0 14px; height: var(--btn-h);
-      border-radius: 10px; font-weight: 700; letter-spacing:.2px;
-      background: var(--brand); color: #fff; font-size: .95rem;
-      transition: transform .02s ease, background .2s ease, box-shadow .2s ease;
-      box-shadow: 0 1px 0 rgba(2,6,23,.05);
+      appearance:none; border:none; cursor:pointer;
+      padding:10px 14px; border-radius:10px; font-weight:600;
+      background:var(--brand); color:#fff;
+      transition:transform .02s ease, background .2s ease;
+      min-width:120px;
     }
-    .btn:hover{ background: var(--brand-2); }
-    .btn:active{ transform: translateY(1px); }
-    .btn.secondary{ background: #e2e8f0; color: #0f172a; }
-    .btn.ghost{ background: transparent; color: var(--brand); border: 1px dashed var(--brand); }
+    .btn:hover{background:var(--brand-2)}
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background:#e2e8f0; color:#0f172a}
+    .btn.ghost{background:transparent; color:var(--brand); border:1px dashed var(--brand)}
 
     /* Result */
     .result{
-      margin-top: 10px; padding: 12px; border-radius: 10px;
-      background: #f6faff; border: 1px solid var(--border);
+      margin-top:12px; padding:14px; border-radius:10px;
+      background:#f1f5f9; border:1px solid #e2e8f0;
     }
-    .result h3{ margin: 0 0 8px; font-size: 1.05rem; }
-    .muted{ color: var(--muted); }
+    .result h3{margin:0 0 10px}
+    .muted{color:var(--muted)}
 
-    /* Footer (pinned) */
+    /* Footer */
     .site-footer{
-      position: fixed; left: 0; right: 0; bottom: 8px;
-      text-align: center; color: var(--muted); font-size: .9rem;
-      padding: 6px 8px;
-    }
-
-    /* Compact on small screens */
-    @media (max-width: 420px){
-      .row{ grid-template-columns: 1fr; }
-      .dates-block{ margin-left: 0; }
+      position:fixed; left:0; right:0; bottom:8px;
+      text-align:center; color:var(--muted); font-size:.9rem;
+      padding:6px 8px;
     }
   </style>
-
-  <script>
-    // Optional light protection (you can remove if not needed)
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = function(e){
-      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J')) || (e.ctrlKey && e.key==='U')) return false;
-    };
-  </script>
 </head>
 <body>
   <main class="container" role="main">
-    <!-- Centered header -->
-    <header class="header">
-      <h1 class="title">Time Duration Calculator</h1>
-      <p class="subtitle">Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, swap, and date-aware mode.</p>
-      <div class="toggles" aria-label="Mode & options">
-        <span class="chip" title="Time-only mode indicator">⏱️ Time-only</span>
+    <div class="header">
+      <h1>Time Duration Calculator</h1>
+      <p>Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, swap, and date-aware mode.</p>
+      <div class="toggles">
+        <span class="pill">⏱️ Time-only</span>
         <label class="toggle"><input type="checkbox" id="withDates" /> Include dates</label>
         <label class="toggle"><input type="checkbox" id="twentyFour" /> Use 24-hour inputs</label>
       </div>
-    </header>
+    </div>
 
     <!-- Time inputs -->
     <section class="grid" aria-label="Inputs">
-      <!-- START -->
       <div>
         <div class="row">
           <label>Start</label>
           <div class="inline">
             <div id="start-12" class="seg">
-              <select id="sH12" aria-label="Start hour (1–12)"></select> :
-              <select id="sM12" aria-label="Start minute (00–59)"></select> :
-              <select id="sS12" aria-label="Start second (00–59)"></select>
-              <select id="sAP" aria-label="Start AM/PM"><option>AM</option><option>PM</option></select>
+              <select id="sH12"></select> :
+              <select id="sM12"></select> :
+              <select id="sS12"></select>
+              <select id="sAP"><option>AM</option><option>PM</option></select>
             </div>
             <div id="start-24" class="seg" style="display:none">
-              <select id="sH24" aria-label="Start hour (00–23)"></select> :
-              <select id="sM24" aria-label="Start minute (00–59)"></select> :
-              <select id="sS24" aria-label="Start second (00–59)"></select>
+              <select id="sH24"></select> :
+              <select id="sM24"></select> :
+              <select id="sS24"></select>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- END -->
       <div>
         <div class="row">
           <label>End</label>
           <div class="inline">
             <div id="end-12" class="seg">
-              <select id="eH12" aria-label="End hour (1–12)"></select> :
-              <select id="eM12" aria-label="End minute (00–59)"></select> :
-              <select id="eS12" aria-label="End second (00–59)"></select>
-              <select id="eAP" aria-label="End AM/PM"><option>AM</option><option>PM</option></select>
+              <select id="eH12"></select> :
+              <select id="eM12"></select> :
+              <select id="eS12"></select>
+              <select id="eAP"><option>AM</option><option>PM</option></select>
             </div>
             <div id="end-24" class="seg" style="display:none">
-              <select id="eH24" aria-label="End hour (00–23)"></select> :
-              <select id="eM24" aria-label="End minute (00–59)"></select> :
-              <select id="eS24" aria-label="End second (00–59)"></select>
+              <select id="eH24"></select> :
+              <select id="eM24"></select> :
+              <select id="eS24"></select>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Dates subcanvas (hidden until Include dates is checked) -->
-    <section id="datesBlock" class="dates-block" aria-label="Date inputs">
+    <!-- Dates -->
+    <section id="datesBlock" class="dates-block">
       <div class="dates-grid">
         <div class="dates-field">
           <label for="sDate">Start date</label>
@@ -230,8 +181,8 @@
       </div>
     </section>
 
-    <!-- Actions (centered, just above Result) -->
-    <section class="actions" aria-label="Actions">
+    <!-- Actions -->
+    <section class="actions">
       <h3>Actions</h3>
       <div class="controls">
         <button class="btn" id="calc">Calculate</button>
@@ -241,7 +192,7 @@
     </section>
 
     <!-- Result -->
-    <section class="result" id="result" aria-live="polite">
+    <section class="result" id="result">
       <h3>Result</h3>
       <div id="resMain" class="muted">Enter values and click <b>Calculate</b>.</div>
       <ul id="resList" style="margin:8px 0 0 18px"></ul>
@@ -249,152 +200,41 @@
     </section>
   </main>
 
-  <!-- Footer pinned to page bottom -->
-  <footer class="site-footer">© 2025 Time Duration Calculator. All rights reserved.</footer>
+  <div class="site-footer">
+    © 2025 Time Duration Calculator. All rights reserved.
+  </div>
 
   <script>
-    // ---------- Utilities ----------
-    const pad = n => String(n).padStart(2,'0');
-    function fillRange(sel, start, end){
-      for(let i=start;i<=end;i++){
-        const opt = document.createElement('option');
-        opt.value = i; opt.textContent = pad(i);
-        sel.appendChild(opt);
-      }
-    }
-    function set12h(selH, selM, selS, selAP, d){
-      let h = d.getHours();
-      const ap = h >= 12 ? 'PM' : 'AM';
-      h = h % 12; if (h === 0) h = 12;
-      selH.value = h; selM.value = d.getMinutes(); selS.value = d.getSeconds(); selAP.value = ap;
-    }
-    function set24h(selH, selM, selS, d){
-      selH.value = d.getHours(); selM.value = d.getMinutes(); selS.value = d.getSeconds();
-    }
-    function from12toSecs(h, m, s, ap){
-      h = +h; m = +m; s = +s;
-      if (ap === 'AM') { if (h === 12) h = 0; }
-      else { if (h !== 12) h += 12; }
-      return h*3600 + m*60 + s;
-    }
-    function from24toSecs(h, m, s){ return +h*3600 + +m*60 + +s; }
-
-    // ---------- DOM refs ----------
-    const sH12=document.getElementById('sH12'), sM12=document.getElementById('sM12'), sS12=document.getElementById('sS12'), sAP=document.getElementById('sAP');
-    const eH12=document.getElementById('eH12'), eM12=document.getElementById('eM12'), eS12=document.getElementById('eS12'), eAP=document.getElementById('eAP');
-    const sH24=document.getElementById('sH24'), sM24=document.getElementById('sM24'), sS24=document.getElementById('sS24');
-    const eH24=document.getElementById('eH24'), eM24=document.getElementById('eM24'), eS24=document.getElementById('eS24');
-
-    const start12=document.getElementById('start-12'), end12=document.getElementById('end-12');
-    const start24=document.getElementById('start-24'), end24=document.getElementById('end-24');
-
-    const withDates=document.getElementById('withDates'), twentyFour=document.getElementById('twentyFour');
-    const datesBlock=document.getElementById('datesBlock');
-    const sDate=document.getElementById('sDate'), eDate=document.getElementById('eDate');
-
-    const calcBtn=document.getElementById('calc'), swapBtn=document.getElementById('swap'), resetBtn=document.getElementById('reset');
-    const nowStart=document.getElementById('nowStart'), nowEnd=document.getElementById('nowEnd');
-
-    const resMain=document.getElementById('resMain'), resList=document.getElementById('resList'), note=document.getElementById('note');
-
-    // ---------- Populate controls ----------
-    for(let i=1;i<=12;i++){
-      [sH12,eH12].forEach(sel=>{
-        const o=document.createElement('option'); o.value=i; o.textContent=String(i);
-        sel.appendChild(o.cloneNode(true));
-      });
-    }
-    [sM12, sS12, eM12, eS12].forEach(sel=>fillRange(sel,0,59));
-    [sH24, eH24].forEach(sel=>fillRange(sel,0,23));
-    [sM24, sS24, eM24, eS24].forEach(sel=>fillRange(sel,0,59));
-
-    // ---------- Defaults (current time) ----------
-    (function initNow(){
-      const d = new Date();
-      set12h(sH12,sM12,sS12,sAP,d); set24h(sH24,sM24,sS24,d);
-      set12h(eH12,eM12,eS12,eAP,d); set24h(eH24,eM24,eS24,d);
-    })();
-
-    // ---------- Toggles ----------
-    function toggleMode(){
-      const is24 = twentyFour.checked;
-      start12.style.display = is24 ? 'none':'flex';
-      end12.style.display   = is24 ? 'none':'flex';
-      start24.style.display = is24 ? 'flex':'none';
-      end24.style.display   = is24 ? 'flex':'none';
-    }
-    function toggleDates(){
-      datesBlock.style.display = withDates.checked ? 'block' : 'none';
-    }
-    twentyFour.addEventListener('change', toggleMode);
-    withDates.addEventListener('change', toggleDates);
-
-    // ---------- Actions ----------
-    function setNowStart(){
-      const d = new Date();
-      set12h(sH12,sM12,sS12,sAP,d); set24h(sH24,sM24,sS24,d);
-      sDate.value = d.toISOString().slice(0,10);
-    }
-    function setNowEnd(){
-      const d = new Date();
-      set12h(eH12,eM12,eS12,eAP,d); set24h(eH24,eM24,eS24,d);
-      eDate.value = d.toISOString().slice(0,10);
-    }
-    nowStart.addEventListener('click', setNowStart);
-    nowEnd.addEventListener('click', setNowEnd);
-
-    calcBtn.addEventListener('click', ()=>{
-      const is24 = twentyFour.checked;
-      const useDates = withDates.checked;
-
-      const sSecs = !is24 ? from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value)
-                          : from24toSecs(sH24.value,sM24.value,sS24.value);
-      const eSecs = !is24 ? from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value)
-                          : from24toSecs(eH24.value,eM24.value,eS24.value);
-
-      let totalSeconds;
-      if (useDates && sDate.value && eDate.value){
-        const sD = new Date(sDate.value + "T00:00:00");
-        const eD = new Date(eDate.value + "T00:00:00");
-        totalSeconds = Math.abs((eD.getTime()/1000 + eSecs) - (sD.getTime()/1000 + sSecs));
-      } else {
-        totalSeconds = eSecs - sSecs;
-        if (totalSeconds < 0) totalSeconds += 24*3600; // across midnight
-      }
-
-      const h = Math.floor(totalSeconds/3600);
-      const m = Math.floor((totalSeconds%3600)/60);
-      const s = Math.floor(totalSeconds%60);
-
-      resMain.textContent = "Duration calculated.";
-      resList.innerHTML = `
-        <li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li>
-        <li>${(totalSeconds/3600).toFixed(4)} hours</li>
-        <li>${Math.round(totalSeconds/60)} minutes</li>
-        <li>${totalSeconds} seconds</li>
-      `;
-      note.textContent = (!useDates && (eSecs < sSecs))
-        ? "Note: End time treated as next day."
-        : "";
-    });
-
-    swapBtn.addEventListener('click', ()=>{
-      [sH12.value, eH12.value] = [eH12.value, sH12.value];
-      [sM12.value, eM12.value] = [eM12.value, sM12.value];
-      [sS12.value, eS12.value] = [eS12.value, sS12.value];
-      [sAP.value,  eAP.value ] = [eAP.value,  sAP.value ];
-      [sH24.value, eH24.value] = [eH24.value, sH24.value];
-      [sM24.value, eM24.value] = [eM24.value, sM24.value];
-      [sS24.value, eS24.value] = [eS24.value, sS24.value];
-      if (withDates.checked){
-        [sDate.value, eDate.value] = [eDate.value, sDate.value];
-      }
-    });
-
-    resetBtn.addEventListener('click', ()=> location.reload());
-
-    // Initial view
-    toggleMode(); toggleDates();
+    const pad=n=>String(n).padStart(2,'0');
+    function fillRange(sel,start,end){for(let i=start;i<=end;i++){let o=document.createElement('option');o.value=i;o.textContent=pad(i);sel.appendChild(o)}}
+    const sH12=document.getElementById('sH12'),sM12=document.getElementById('sM12'),sS12=document.getElementById('sS12'),sAP=document.getElementById('sAP');
+    const eH12=document.getElementById('eH12'),eM12=document.getElementById('eM12'),eS12=document.getElementById('eS12'),eAP=document.getElementById('eAP');
+    const sH24=document.getElementById('sH24'),sM24=document.getElementById('sM24'),sS24=document.getElementById('sS24');
+    const eH24=document.getElementById('eH24'),eM24=document.getElementById('eM24'),eS24=document.getElementById('eS24');
+    [sH12,eH12].forEach(sel=>{for(let i=1;i<=12;i++){let o=document.createElement('option');o.value=i;o.text=i;sel.add(o)}});
+    [sM12,sS12,eM12,eS12].forEach(sel=>fillRange(sel,0,59));
+    [sH24,eH24].forEach(sel=>fillRange(sel,0,23));
+    [sM24,sS24,eM24,eS24].forEach(sel=>fillRange(sel,0,59));
+    const start12=document.getElementById('start-12'),end12=document.getElementById('end-12'),start24=document.getElementById('start-24'),end24=document.getElementById('end-24');
+    const withDates=document.getElementById('withDates'),twentyFour=document.getElementById('twentyFour'),datesBlock=document.getElementById('datesBlock');
+    const sDate=document.getElementById('sDate'),eDate=document.getElementById('eDate');
+    const calcBtn=document.getElementById('calc'),swapBtn=document.getElementById('swap'),resetBtn=document.getElementById('reset');
+    const nowStart=document.getElementById('nowStart'),nowEnd=document.getElementById('nowEnd');
+    const resMain=document.getElementById('resMain'),resList=document.getElementById('resList'),note=document.getElementById('note');
+    function set12h(selH,selM,selS,selAP,d){let h=d.getHours(),ap=h>=12?'PM':'AM';h=h%12;if(h===0)h=12;selH.value=h;selM.value=d.getMinutes();selS.value=d.getSeconds();selAP.value=ap}
+    function set24h(selH,selM,selS,d){selH.value=d.getHours();selM.value=d.getMinutes();selS.value=d.getSeconds()}
+    function from12toSecs(h,m,s,ap){h=+h;m=+m;s=+s;if(ap==='AM'){if(h===12)h=0;}else{if(h!==12)h+=12;}return h*3600+m*60+s}
+    function from24toSecs(h,m,s){return +h*3600+ +m*60+ +s}
+    function toggleMode(){let is24=twentyFour.checked;start12.style.display=is24?'none':'flex';end12.style.display=is24?'none':'flex';start24.style.display=is24?'flex':'none';end24.style.display=is24?'flex':'none'}
+    function toggleDates(){datesBlock.style.display=withDates.checked?'block':'none'}
+    twentyFour.addEventListener('change',toggleMode);withDates.addEventListener('change',toggleDates);
+    function setNowStart(){let d=new Date();set12h(sH12,sM12,sS12,sAP,d);set24h(sH24,sM24,sS24,d);sDate.value=d.toISOString().slice(0,10)}
+    function setNowEnd(){let d=new Date();set12h(eH12,eM12,eS12,eAP,d);set24h(eH24,eM24,eS24,d);eDate.value=d.toISOString().slice(0,10)}
+    nowStart.addEventListener('click',setNowStart);nowEnd.addEventListener('click',setNowEnd);
+    calcBtn.addEventListener('click',()=>{let is24=twentyFour.checked,useDates=withDates.checked;let sSecs=!is24?from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value):from24toSecs(sH24.value,sM24.value,sS24.value);let eSecs=!is24?from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value):from24toSecs(eH24.value,eM24.value,eS24.value);let total; if(useDates&&sDate.value&&eDate.value){let sd=new Date(sDate.value+"T00:00:00"),ed=new Date(eDate.value+"T00:00:00");total=Math.abs((ed.getTime()/1000+eSecs)-(sd.getTime()/1000+sSecs))}else{total=eSecs-sSecs;if(total<0)total+=86400}const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=Math.floor(total%60);resMain.innerHTML="Duration calculated.";resList.innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li><li>${(total/3600).toFixed(4)} hours</li><li>${Math.round(total/60)} minutes</li><li>${total} seconds</li>`;note.textContent=!useDates&&eSecs<sSecs?"Note: End time treated as next day.":""});
+    swapBtn.addEventListener('click',()=>{[sH12.value,eH12.value]=[eH12.value,sH12.value];[sM12.value,eM12.value]=[eM12.value,sM12.value];[sS12.value,eS12.value]=[eS12.value,sS12.value];[sAP.value,eAP.value]=[eAP.value,sAP.value];[sH24.value,eH24.value]=[eH24.value,sH24.value];[sM24.value,eM24.value]=[eM24.value,sM24.value];[sS24.value,eS24.value]=[eS24.value,sS24.value];if(withDates.checked){[sDate.value,eDate.value]=[eDate.value,sDate.value]}});
+    resetBtn.addEventListener('click',()=>location.reload());
+    toggleMode();toggleDates();
   </script>
 </body>
 </html>
