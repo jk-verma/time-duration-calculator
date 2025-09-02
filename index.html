@@ -6,102 +6,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="icon" type="image/png" href="favicon.png" />
-  <meta property="og:title" content="Time Duration Calculator — Hours, Minutes & Seconds" />
-  <meta property="og:description" content="Calculate accurate time differences with AM/PM or 24-hour inputs. Includes 'Now', swap, and date support." />
-  <meta property="og:image" content="og-image.png" />
-  <meta property="og:url" content="https://jk-verma.github.io/time-duration-calculator/" />
-  <meta property="og:type" content="website" />
-
   <style>
     :root{
-      --bg:#f6fbff;
-      --card:#ffffff;
-      --ink:#0f172a;
-      --muted:#64748b;
-      --brand:#0288d1;
-      --brand-2:#0277bd;
-      --ring:rgba(2,136,209,.25);
-      --ok:#059669;
-      --warn:#b45309;
+      --bg:#f6fbff; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+      --brand:#0288d1; --brand-2:#0277bd; --ring:rgba(2,136,209,.25);
+      --ok:#059669; --warn:#b45309;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:linear-gradient(to bottom,#e0f7fa,#ffffff);
       color:var(--ink);
-      display:flex; align-items:flex-start; justify-content:center;
+      display:flex; justify-content:center; align-items:flex-start;
       padding:24px;
     }
     .container{
-      width:100%; max-width:980px; /* increased canvas */
-      background:var(--card);
+      width:100%; max-width:980px; background:var(--card);
       border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.12);
-      padding:32px; /* more padding */
+      padding:32px;
     }
-    h1{margin:0 0 6px; font-size:1.8rem; color:#124076}
-    p.subtitle{margin:0 0 18px; color:var(--muted)}
+    /* Centered header + toggles */
+    .header{
+      text-align:center; margin-bottom:18px;
+    }
+    .header h1{margin:0 0 8px; font-size:1.9rem; color:#124076}
+    .header p{margin:0; color:var(--muted)}
+    .toggles{
+      display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center;
+      margin-top:14px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      background:#ecfeff; color:#0c4a6e; border:1px solid #bae6fd;
+      padding:8px 12px; border-radius:999px; font-weight:600;
+    }
+    .toggle{
+      display:inline-flex; align-items:center; gap:8px; font-weight:600; color:#0f172a;
+    }
+
+    /* Inputs grid */
     .grid{
-      display:grid; gap:20px;
-      grid-template-columns: 1fr;
+      display:grid; gap:20px; grid-template-columns: 1fr;
+      margin-top:18px;
+    }
+    @media(min-width:720px){
+      .grid{grid-template-columns:1fr 1fr}
     }
     .row{
-      display:grid; gap:8px;
-      grid-template-columns: 120px 1fr;
-      align-items:center;
-    }
-    .inline{
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-    }
-    .seg{
-      display:flex; gap:6px; align-items:center;
-      background:#f8fafc; padding:8px; border-radius:10px;
-      border:1px solid #e2e8f0;
+      display:grid; gap:8px; grid-template-columns: 120px 1fr; align-items:center;
     }
     label{font-weight:600}
-    select, input[type="number"], input[type="text"], input[type="date"]{
+    .inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .seg{
+      display:flex; gap:6px; align-items:center;
+      background:#f8fafc; padding:8px; border-radius:10px; border:1px solid #e2e8f0;
+    }
+    select, input[type="date"]{
       padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px;
       min-width:64px; font-size:.95rem; background:#fff; color:var(--ink);
       outline:none;
     }
-    select:focus, input:focus{box-shadow:0 0 0 5px var(--ring); border-color:var(--brand)}
+    select:focus, input[type="date"]:focus{box-shadow:0 0 0 5px var(--ring); border-color:var(--brand)}
+
+    /* Dates block (centered and above Actions) */
+    .dates-block{
+      display:none; /* toggled via JS */
+      margin:16px auto 8px;
+      max-width:640px;
+      border:1px solid #e2e8f0; border-radius:12px; background:#fbfdff; padding:12px;
+    }
+    .dates-grid{
+      display:grid; gap:12px; grid-template-columns:1fr;
+    }
+    @media(min-width:600px){
+      .dates-grid{grid-template-columns:1fr 1fr}
+    }
+    .dates-field{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .dates-field label{font-weight:600}
+
+    /* Actions (centered) */
+    .actions{
+      text-align:center; margin-top:12px; margin-bottom:8px;
+    }
+    .actions h3{margin:0 0 10px}
+    .controls{display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center}
     .btn{
       appearance:none; border:none; cursor:pointer;
       padding:10px 14px; border-radius:10px; font-weight:600;
       background:var(--brand); color:#fff;
       transition:transform .02s ease, background .2s ease;
+      min-width:110px;
     }
     .btn:hover{background:var(--brand-2)}
     .btn:active{transform:translateY(1px)}
-    .btn.secondary{
-      background:#e2e8f0; color:#0f172a; font-weight:600;
-    }
-    .btn.ghost{
-      background:transparent; color:var(--brand); border:1px dashed var(--brand);
-    }
-    .muted{color:var(--muted)}
-    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .btn.secondary{background:#e2e8f0; color:#0f172a}
+    .btn.ghost{background:transparent; color:var(--brand); border:1px dashed var(--brand)}
+
+    /* Result */
     .result{
-      margin-top:16px; padding:14px; border-radius:10px;
+      margin-top:12px; padding:14px; border-radius:10px;
       background:#f1f5f9; border:1px solid #e2e8f0;
     }
     .result h3{margin:0 0 10px}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#ecfeff; color:#0c4a6e; border:1px solid #bae6fd;
-      padding:8px 10px; border-radius:999px; font-weight:600
-    }
-    details{
-      margin-top:8px; border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px;
-      background:#fbfdff;
-    }
-    details summary{cursor:pointer; font-weight:600}
-    .footer{
-      margin-top:24px; text-align:center; color:var(--muted); font-size:.9rem
-    }
-    @media(min-width:720px){
-      .grid{grid-template-columns: 1fr 1fr}
-    }
+    .muted{color:var(--muted)}
+    .footer{margin-top:24px; text-align:center; color:var(--muted); font-size:.9rem}
   </style>
 
   <script>
@@ -113,16 +124,19 @@
 </head>
 <body>
   <main class="container" role="main">
-    <h1>Time Duration Calculator</h1>
-    <p class="subtitle">Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, swap, and date-aware mode.</p>
-
-    <div class="inline">
-      <span class="pill"><span>⏱️</span> Time-only</span>
-      <label class="inline"><input type="checkbox" id="withDates" /> Include dates</label>
-      <label class="inline"><input type="checkbox" id="twentyFour" /> Use 24-hour inputs</label>
+    <!-- Centered header -->
+    <div class="header">
+      <h1>Time Duration Calculator</h1>
+      <p>Find the exact duration between two times. Works across midnight, supports AM/PM or 24-hour input, swap, and date-aware mode.</p>
+      <div class="toggles">
+        <span class="pill" title="Time-only mode indicator">⏱️ <span style="margin-left:6px">Time-only</span></span>
+        <label class="toggle"><input type="checkbox" id="withDates" /> Include dates</label>
+        <label class="toggle"><input type="checkbox" id="twentyFour" /> Use 24-hour inputs</label>
+      </div>
     </div>
 
-    <section class="grid">
+    <!-- Time inputs -->
+    <section class="grid" aria-label="Inputs">
       <!-- START -->
       <div>
         <div class="row">
@@ -141,10 +155,6 @@
             </div>
             <button class="btn secondary" id="nowStart">Now</button>
           </div>
-        </div>
-        <div class="row dates" style="display:none">
-          <label>Start date</label>
-          <div class="inline seg"><input type="date" id="sDate" /></div>
         </div>
       </div>
 
@@ -167,22 +177,35 @@
             <button class="btn secondary" id="nowEnd">Now</button>
           </div>
         </div>
-        <div class="row">
-          <label>Actions</label>
-          <div class="controls">
-            <button class="btn" id="calc">Calculate</button>
-            <button class="btn secondary" id="swap">Swap</button>
-            <button class="btn ghost" id="reset">Reset</button>
-          </div>
+      </div>
+    </section>
+
+    <!-- Dates (hidden until Include dates is checked) -->
+    <section id="datesBlock" class="dates-block" aria-label="Dates">
+      <div class="dates-grid">
+        <div class="dates-field">
+          <label for="sDate">Start date</label>
+          <input type="date" id="sDate" />
         </div>
-        <div class="row dates" style="display:none">
-          <label>End date</label>
-          <div class="inline seg"><input type="date" id="eDate" /></div>
+        <div class="dates-field">
+          <label for="eDate">End date</label>
+          <input type="date" id="eDate" />
         </div>
       </div>
     </section>
 
-    <section class="result" id="result">
+    <!-- Centered Actions (just above result) -->
+    <section class="actions" aria-label="Actions">
+      <h3>Actions</h3>
+      <div class="controls">
+        <button class="btn" id="calc">Calculate</button>
+        <button class="btn secondary" id="swap">Swap</button>
+        <button class="btn ghost" id="reset">Reset</button>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section class="result" id="result" aria-live="polite">
       <h3>Result</h3>
       <div id="resMain" class="muted">Enter values and click <b>Calculate</b>.</div>
       <ul id="resList" style="margin:8px 0 0 18px"></ul>
@@ -195,7 +218,8 @@
   </main>
 
   <script>
-    const pad = n=>String(n).padStart(2,'0');
+    // ------- Helpers -------
+    const pad = n => String(n).padStart(2,'0');
     function fillRange(sel, start, end){
       for(let i=start;i<=end;i++){
         const opt=document.createElement('option');
@@ -203,36 +227,171 @@
         sel.appendChild(opt);
       }
     }
-    const sH12=document.getElementById('sH12'),sM12=document.getElementById('sM12'),sS12=document.getElementById('sS12'),sAP=document.getElementById('sAP');
-    const eH12=document.getElementById('eH12'),eM12=document.getElementById('eM12'),eS12=document.getElementById('eS12'),eAP=document.getElementById('eAP');
-    const sH24=document.getElementById('sH24'),sM24=document.getElementById('sM24'),sS24=document.getElementById('sS24');
-    const eH24=document.getElementById('eH24'),eM24=document.getElementById('eM24'),eS24=document.getElementById('eS24');
-    [sH12,eH12].forEach(sel=>{for(let i=1;i<=12;i++){let o=document.createElement('option');o.value=i;o.text=i;sel.add(o)}});
-    [sM12,sS12,eM12,eS12].forEach(sel=>fillRange(sel,0,59));
-    [sH24,eH24].forEach(sel=>fillRange(sel,0,23));
-    [sM24,sS24,eM24,eS24].forEach(sel=>fillRange(sel,0,59));
-    const start12=document.getElementById('start-12'),end12=document.getElementById('end-12'),start24=document.getElementById('start-24'),end24=document.getElementById('end-24');
-    const twentyFour=document.getElementById('twentyFour'),withDates=document.getElementById('withDates'),sDate=document.getElementById('sDate'),eDate=document.getElementById('eDate');
-    function toggleMode(){let is24=twentyFour.checked;start12.style.display=is24?'none':'flex';end12.style.display=is24?'none':'flex';start24.style.display=is24?'flex':'none';end24.style.display=is24?'flex':'none';}
-    function toggleDates(){let show=withDates.checked;document.querySelectorAll('.dates').forEach(el=>{el.style.display=show?'grid':'none'})}
-    twentyFour.addEventListener('change',toggleMode);withDates.addEventListener('change',toggleDates);
-    function from12(h,m,s,ap){h=+h;m=+m;s=+s;if(ap==='AM'){if(h===12)h=0;}else{if(h!==12)h+=12;}return h*3600+m*60+s}
-    function from24(h,m,s){return +h*3600+ +m*60+ +s}
-    document.getElementById('calc').addEventListener('click',()=>{
-      let is24=twentyFour.checked,useDates=withDates.checked;
-      let sSecs=!is24?from12(sH12.value,sM12.value,sS12.value,sAP.value):from24(sH24.value,sM24.value,sS24.value);
-      let eSecs=!is24?from12(eH12.value,eM12.value,eS12.value,eAP.value):from24(eH24.value,eM24.value,eS24.value);
-      let total; if(useDates&&sDate.value&&eDate.value){let sd=new Date(sDate.value+"T00:00:00"),ed=new Date(eDate.value+"T00:00:00");total=Math.abs((ed.getTime()/1000+eSecs)-(sd.getTime()/1000+sSecs))}else{total=eSecs-sSecs;if(total<0)total+=86400}
-      const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=Math.floor(total%60);
-      document.getElementById('resMain').innerHTML="Duration calculated.";
-      document.getElementById('resList').innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li><li>${(total/3600).toFixed(4)} hours</li><li>${Math.round(total/60)} minutes</li><li>${total} seconds</li>`;
-      document.getElementById('note').textContent=!useDates&&eSecs<sSecs?"Note: End time treated as next day.":"";
+    function set12h(selH, selM, selS, selAP, date){
+      let h = date.getHours();
+      const ap = h>=12 ? 'PM':'AM';
+      h = h%12; if(h===0) h=12;
+      selH.value = h;
+      selM.value = date.getMinutes();
+      selS.value = date.getSeconds();
+      selAP.value = ap;
+    }
+    function set24h(selH, selM, selS, date){
+      selH.value = date.getHours();
+      selM.value = date.getMinutes();
+      selS.value = date.getSeconds();
+    }
+    function from12toSecs(h, m, s, ap){
+      h = +h; m = +m; s = +s;
+      if (ap === 'AM') { if (h === 12) h = 0; }
+      else { if (h !== 12) h += 12; }
+      return h*3600 + m*60 + s;
+    }
+    function from24toSecs(h, m, s){ return +h*3600 + +m*60 + +s; }
+
+    // ------- DOM refs -------
+    const sH12 = document.getElementById('sH12');
+    const sM12 = document.getElementById('sM12');
+    const sS12 = document.getElementById('sS12');
+    const sAP  = document.getElementById('sAP');
+    const eH12 = document.getElementById('eH12');
+    const eM12 = document.getElementById('eM12');
+    const eS12 = document.getElementById('eS12');
+    const eAP  = document.getElementById('eAP');
+
+    const sH24 = document.getElementById('sH24');
+    const sM24 = document.getElementById('sM24');
+    const sS24 = document.getElementById('sS24');
+    const eH24 = document.getElementById('eH24');
+    const eM24 = document.getElementById('eM24');
+    const eS24 = document.getElementById('eS24');
+
+    const start12 = document.getElementById('start-12');
+    const end12   = document.getElementById('end-12');
+    const start24 = document.getElementById('start-24');
+    const end24   = document.getElementById('end-24');
+
+    const withDates  = document.getElementById('withDates');
+    const twentyFour = document.getElementById('twentyFour');
+    const datesBlock = document.getElementById('datesBlock');
+    const sDate = document.getElementById('sDate');
+    const eDate = document.getElementById('eDate');
+
+    const calcBtn = document.getElementById('calc');
+    const swapBtn = document.getElementById('swap');
+    const resetBtn= document.getElementById('reset');
+    const nowStart= document.getElementById('nowStart');
+    const nowEnd  = document.getElementById('nowEnd');
+
+    const resMain = document.getElementById('resMain');
+    const resList = document.getElementById('resList');
+    const note    = document.getElementById('note');
+
+    // ------- Populate selects -------
+    // 12h hours
+    for(let i=1;i<=12;i++){
+      [sH12,eH12].forEach(sel=>{
+        const o=document.createElement('option'); o.value=i; o.textContent=String(i);
+        sel.appendChild(o.cloneNode(true));
+      });
+    }
+    // minutes/seconds
+    [sM12, sS12, eM12, eS12].forEach(sel=>fillRange(sel,0,59));
+    // 24h hours
+    [sH24, eH24].forEach(sel=>fillRange(sel,0,23));
+    // minutes/seconds (24h)
+    [sM24, sS24, eM24, eS24].forEach(sel=>fillRange(sel,0,59));
+
+    // ------- Default times -------
+    function setNowStart(){
+      const d = new Date();
+      set12h(sH12,sM12,sS12,sAP,d);
+      set24h(sH24,sM24,sS24,d);
+      if (!sDate.value) sDate.value = d.toISOString().slice(0,10);
+    }
+    function setNowEnd(){
+      const d = new Date();
+      set12h(eH12,eM12,eS12,eAP,d);
+      set24h(eH24,eM24,eS24,d);
+      if (!eDate.value) eDate.value = d.toISOString().slice(0,10);
+    }
+    setNowStart(); setNowEnd();
+
+    // ------- Toggles -------
+    function toggleMode(){
+      const is24 = twentyFour.checked;
+      start12.style.display = is24 ? 'none':'flex';
+      end12.style.display   = is24 ? 'none':'flex';
+      start24.style.display = is24 ? 'flex':'none';
+      end24.style.display   = is24 ? 'flex':'none';
+    }
+    function toggleDates(){
+      const show = withDates.checked;
+      datesBlock.style.display = show ? 'block' : 'none';
+    }
+    twentyFour.addEventListener('change', toggleMode);
+    withDates.addEventListener('change', toggleDates);
+
+    // ------- Actions -------
+    calcBtn.addEventListener('click', ()=>{
+      const is24 = twentyFour.checked;
+      const useDates = withDates.checked;
+
+      let sSecs = !is24
+        ? from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value)
+        : from24toSecs(sH24.value,sM24.value,sS24.value);
+      let eSecs = !is24
+        ? from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value)
+        : from24toSecs(eH24.value,eM24.value,eS24.value);
+
+      let totalSeconds;
+      if (useDates && sDate.value && eDate.value){
+        const sD = new Date(sDate.value + "T00:00:00");
+        const eD = new Date(eDate.value + "T00:00:00");
+        const sAbs = sD.getTime()/1000 + sSecs;
+        const eAbs = eD.getTime()/1000 + eSecs;
+        totalSeconds = Math.abs(eAbs - sAbs);
+      } else {
+        totalSeconds = eSecs - sSecs;
+        if (totalSeconds < 0) totalSeconds += 24*3600;
+      }
+
+      const h = Math.floor(totalSeconds/3600);
+      const m = Math.floor((totalSeconds%3600)/60);
+      const s = Math.floor(totalSeconds%60);
+
+      resMain.innerHTML = "Duration calculated.";
+      resList.innerHTML = `
+        <li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li>
+        <li>${(totalSeconds/3600).toFixed(4)} hours</li>
+        <li>${Math.round(totalSeconds/60)} minutes</li>
+        <li>${totalSeconds} seconds</li>
+      `;
+      note.textContent = (!useDates && (eSecs < sSecs))
+        ? "Note: End time treated as next day."
+        : "";
     });
-    document.getElementById('swap').addEventListener('click',()=>{[sH12.value,eH12.value]=[eH12.value,sH12.value];[sM12.value,eM12.value]=[eM12.value,sM12.value];[sS12.value,eS12.value]=[eS12.value,sS12.value];[sAP.value,eAP.value]=[eAP.value,sAP.value];[sH24.value,eH24.value]=[eH24.value,sH24.value];[sM24.value,eM24.value]=[eM24.value,sM24.value];[sS24.value,eS24.value]=[eS24.value,sS24.value];if(withDates.checked){[sDate.value,eDate.value]=[eDate.value,sDate.value]}});
-    document.getElementById('reset').addEventListener('click',()=>location.reload());
-    document.getElementById('nowStart').addEventListener('click',()=>{let d=new Date();sH12.value=d.getHours()%12||12;sM12.value=d.getMinutes();sS12.value=d.getSeconds();sAP.value=d.getHours()>=12?'PM':'AM';sH24.value=d.getHours();sM24.value=d.getMinutes();sS24.value=d.getSeconds();sDate.value=d.toISOString().slice(0,10)});
-    document.getElementById('nowEnd').addEventListener('click',()=>{let d=new Date();eH12.value=d.getHours()%12||12;eM12.value=d.getMinutes();eS12.value=d.getSeconds();eAP.value=d.getHours()>=12?'PM':'AM';eH24.value=d.getHours();eM24.value=d.getMinutes();eS24.value=d.getSeconds();eDate.value=d.toISOString().slice(0,10)});
-    toggleMode();toggleDates();
+
+    swapBtn.addEventListener('click', ()=>{
+      [sH12.value, eH12.value] = [eH12.value, sH12.value];
+      [sM12.value, eM12.value] = [eM12.value, sM12.value];
+      [sS12.value, eS12.value] = [eS12.value, sS12.value];
+      [sAP.value,  eAP.value ] = [eAP.value,  sAP.value ];
+      [sH24.value, eH24.value] = [eH24.value, sH24.value];
+      [sM24.value, eM24.value] = [eM24.value, sM24.value];
+      [sS24.value, eS24.value] = [eS24.value, sS24.value];
+      if (withDates.checked){
+        [sDate.value, eDate.value] = [eDate.value, sDate.value];
+      }
+    });
+
+    resetBtn.addEventListener('click', ()=> location.reload());
+
+    document.getElementById('nowStart').addEventListener('click', setNowStart);
+    document.getElementById('nowEnd').addEventListener('click', setNowEnd);
+
+    // init
+    toggleMode(); toggleDates();
   </script>
 </body>
 </html>
