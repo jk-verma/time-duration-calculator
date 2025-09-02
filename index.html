@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Time Duration Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <link rel="icon" type="image/png" href="favicon.png" />
   <style>
     :root{
@@ -19,17 +18,17 @@
       background:linear-gradient(to bottom,#e0f7fa,#ffffff);
       color:var(--ink);
       display:flex; justify-content:center; align-items:flex-start;
-      padding:24px;
+      min-height:100vh;
     }
     .container{
       width:100%; max-width:980px; background:var(--card);
       border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.12);
-      padding:32px;
+      padding:32px 32px 72px; /* extra bottom padding so footer never overlaps */
+      margin:24px;
     }
+
     /* Centered header + toggles */
-    .header{
-      text-align:center; margin-bottom:18px;
-    }
+    .header{ text-align:center; margin-bottom:18px; }
     .header h1{margin:0 0 8px; font-size:1.9rem; color:#124076}
     .header p{margin:0; color:var(--muted)}
     .toggles{
@@ -39,23 +38,17 @@
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       background:#ecfeff; color:#0c4a6e; border:1px solid #bae6fd;
-      padding:8px 12px; border-radius:999px; font-weight:600;
+      padding:8px 12px; border-radius:999px; font-weight:600
     }
-    .toggle{
-      display:inline-flex; align-items:center; gap:8px; font-weight:600; color:#0f172a;
-    }
+    .toggle{ display:inline-flex; align-items:center; gap:8px; font-weight:600; color:#0f172a; }
 
     /* Inputs grid */
     .grid{
       display:grid; gap:20px; grid-template-columns: 1fr;
       margin-top:18px;
     }
-    @media(min-width:720px){
-      .grid{grid-template-columns:1fr 1fr}
-    }
-    .row{
-      display:grid; gap:8px; grid-template-columns: 120px 1fr; align-items:center;
-    }
+    @media(min-width:720px){ .grid{grid-template-columns:1fr 1fr} }
+    .row{ display:grid; gap:8px; grid-template-columns: 120px 1fr; align-items:center; }
     label{font-weight:600}
     .inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .seg{
@@ -73,24 +66,17 @@
     .dates-block{
       display:none; /* toggled via JS */
       margin:16px auto 8px;
-      max-width:640px;
+      max-width:640px; /* keep subcanvas size */
       border:1px solid #e2e8f0; border-radius:12px; background:#fbfdff; padding:12px;
     }
-    .dates-grid{
-      display:grid; gap:12px; grid-template-columns:1fr;
-    }
-    @media(min-width:600px){
-      .dates-grid{grid-template-columns:1fr 1fr}
-    }
-    .dates-field{
-      display:flex; flex-direction:column; gap:6px;
-    }
+    .dates-grid{ display:grid; gap:12px; grid-template-columns:1fr; }
+    @media(min-width:600px){ .dates-grid{grid-template-columns:1fr 1fr} }
+    .dates-field{ display:flex; flex-direction:column; gap:8px; }
+    .date-controls{ display:flex; justify-content:center; }
     .dates-field label{font-weight:600}
 
     /* Actions (centered) */
-    .actions{
-      text-align:center; margin-top:12px; margin-bottom:8px;
-    }
+    .actions{ text-align:center; margin-top:12px; margin-bottom:8px; }
     .actions h3{margin:0 0 10px}
     .controls{display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center}
     .btn{
@@ -112,7 +98,13 @@
     }
     .result h3{margin:0 0 10px}
     .muted{color:var(--muted)}
-    .footer{margin-top:24px; text-align:center; color:var(--muted); font-size:.9rem}
+
+    /* Sticky footer at bottom of the page */
+    .site-footer{
+      position:fixed; left:0; right:0; bottom:8px;
+      text-align:center; color:var(--muted); font-size:.9rem;
+      padding:6px 8px; pointer-events:none; /* purely informational */
+    }
   </style>
 
   <script>
@@ -153,7 +145,6 @@
               <select id="sM24"></select> :
               <select id="sS24"></select>
             </div>
-            <button class="btn secondary" id="nowStart">Now</button>
           </div>
         </div>
       </div>
@@ -174,7 +165,6 @@
               <select id="eM24"></select> :
               <select id="eS24"></select>
             </div>
-            <button class="btn secondary" id="nowEnd">Now</button>
           </div>
         </div>
       </div>
@@ -186,10 +176,16 @@
         <div class="dates-field">
           <label for="sDate">Start date</label>
           <input type="date" id="sDate" />
+          <div class="date-controls">
+            <button class="btn secondary" id="nowStart">Now</button>
+          </div>
         </div>
         <div class="dates-field">
           <label for="eDate">End date</label>
           <input type="date" id="eDate" />
+          <div class="date-controls">
+            <button class="btn secondary" id="nowEnd">Now</button>
+          </div>
         </div>
       </div>
     </section>
@@ -211,11 +207,12 @@
       <ul id="resList" style="margin:8px 0 0 18px"></ul>
       <div id="note" class="muted"></div>
     </section>
-
-    <div class="footer">
-      © 2025 Time Duration Calculator. All rights reserved.
-    </div>
   </main>
+
+  <!-- Footer pinned to page bottom -->
+  <div class="site-footer">
+    © 2025 Time Duration Calculator. All rights reserved.
+  </div>
 
   <script>
     // ------- Helpers -------
@@ -288,18 +285,14 @@
     const note    = document.getElementById('note');
 
     // ------- Populate selects -------
-    // 12h hours
     for(let i=1;i<=12;i++){
       [sH12,eH12].forEach(sel=>{
         const o=document.createElement('option'); o.value=i; o.textContent=String(i);
         sel.appendChild(o.cloneNode(true));
       });
     }
-    // minutes/seconds
     [sM12, sS12, eM12, eS12].forEach(sel=>fillRange(sel,0,59));
-    // 24h hours
     [sH24, eH24].forEach(sel=>fillRange(sel,0,23));
-    // minutes/seconds (24h)
     [sM24, sS24, eM24, eS24].forEach(sel=>fillRange(sel,0,59));
 
     // ------- Default times -------
@@ -307,15 +300,22 @@
       const d = new Date();
       set12h(sH12,sM12,sS12,sAP,d);
       set24h(sH24,sM24,sS24,d);
-      if (!sDate.value) sDate.value = d.toISOString().slice(0,10);
+      sDate.value = d.toISOString().slice(0,10);
     }
     function setNowEnd(){
       const d = new Date();
       set12h(eH12,eM12,eS12,eAP,d);
       set24h(eH24,eM24,eS24,d);
-      if (!eDate.value) eDate.value = d.toISOString().slice(0,10);
+      eDate.value = d.toISOString().slice(0,10);
     }
-    setNowStart(); setNowEnd();
+    // initialize with current time (keeps dates empty until user clicks Include dates)
+    (function initNow(){
+      const d=new Date();
+      set12h(sH12,sM12,sS12,sAP,d);
+      set24h(sH24,sM24,sS24,d);
+      set12h(eH12,eM12,eS12,eAP,d);
+      set24h(eH24,eM24,eS24,d);
+    })();
 
     // ------- Toggles -------
     function toggleMode(){
@@ -387,10 +387,11 @@
 
     resetBtn.addEventListener('click', ()=> location.reload());
 
-    document.getElementById('nowStart').addEventListener('click', setNowStart);
-    document.getElementById('nowEnd').addEventListener('click', setNowEnd);
+    // Date-centered "Now" buttons
+    nowStart.addEventListener('click', setNowStart);
+    nowEnd.addEventListener('click', setNowEnd);
 
-    // init
+    // init view
     toggleMode(); toggleDates();
   </script>
 </body>
