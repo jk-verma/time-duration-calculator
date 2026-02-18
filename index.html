@@ -175,7 +175,7 @@
   </main>
 
   <footer class="site-footer">
-    © 2025 Time Duration Calculator. All rights reserved.
+    © <span id="currentYear"></span> Time Duration Calculator. All rights reserved.
   </footer>
 
   <script>
@@ -191,7 +191,7 @@
     const sDate=document.getElementById('sDate'),eDate=document.getElementById('eDate');
     const calcBtn=document.getElementById('calc'),swapBtn=document.getElementById('swap'),resetBtn=document.getElementById('reset');
     const nowStart=document.getElementById('nowStart'),nowEnd=document.getElementById('nowEnd');
-    const resMain=document.getElementById('resMain'),resList=document.getElementById('resList'),note=document.getElementById('note');
+    const resMain=document.getElementById('resMain'),resList=document.getElementById('resList'),note=document.getElementById('note'),currentYear=document.getElementById('currentYear');
     function set12h(selH,selM,selS,selAP,d){let h=d.getHours(),ap=h>=12?'PM':'AM';h=h%12;if(h===0)h=12;selH.value=h;selM.value=d.getMinutes();selS.value=d.getSeconds();selAP.value=ap}
     function set24h(selH,selM,selS,d){selH.value=d.getHours();selM.value=d.getMinutes();selS.value=d.getSeconds()}
     function from12toSecs(h,m,s,ap){h=+h;m=+m;s=+s;if(ap==='AM'){if(h===12)h=0;}else{if(h!==12)h+=12;}return h*3600+m*60+s}
@@ -205,7 +205,7 @@
     calcBtn.addEventListener('click',()=>{const is24=twentyFour.checked,useDates=withDates.checked;const sSecs=!is24?from12toSecs(sH12.value,sM12.value,sS12.value,sAP.value):from24toSecs(sH24.value,sM24.value,sS24.value);const eSecs=!is24?from12toSecs(eH12.value,eM12.value,eS12.value,eAP.value):from24toSecs(eH24.value,eM24.value,eS24.value);let total;if(useDates&&sDate.value&&eDate.value){const sd=new Date(sDate.value+"T00:00:00"),ed=new Date(eDate.value+"T00:00:00");total=Math.abs((ed.getTime()/1000+eSecs)-(sd.getTime()/1000+sSecs))}else{total=eSecs-sSecs;if(total<0)total+=86400}const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=Math.floor(total%60);resMain.innerHTML="Duration calculated.";resList.innerHTML=`<li><b>${h}h ${pad(m)}m ${pad(s)}s</b></li><li>${(total/3600).toFixed(4)} hours</li><li>${Math.round(total/60)} minutes</li><li>${total} seconds</li>`;note.textContent=!useDates&&eSecs<sSecs?"Note: End time treated as next day.":""});
     swapBtn.addEventListener('click',()=>{[sH12.value,eH12.value]=[eH12.value,sH12.value];[sM12.value,eM12.value]=[eM12.value,sM12.value];[sS12.value,eS12.value]=[eS12.value,sS12.value];[sAP.value,eAP.value]=[eAP.value,sAP.value];[sH24.value,eH24.value]=[eH24.value,sH24.value];[sM24.value,eM24.value]=[eM24.value,sM24.value];[sS24.value,eS24.value]=[eS24.value,sS24.value];if(withDates.checked){[sDate.value,eDate.value]=[eDate.value,sDate.value]}});
     resetBtn.addEventListener('click',()=>location.reload());
-    (function initTimes(){let d=new Date();set12h(sH12,sM12,sS12,sAP,d);set24h(sH24,sM24,sS24,d);set12h(eH12,eM12,eS12,eAP,d);set24h(eH24,eM24,eS24,d)})();toggleMode();toggleDates();
+    (function initTimes(){let d=new Date();set12h(sH12,sM12,sS12,sAP,d);set24h(sH24,sM24,sS24,d);set12h(eH12,eM12,eS12,eAP,d);set24h(eH24,eM24,eS24,d)})();toggleMode();toggleDates();currentYear.textContent=new Date().getFullYear();
   </script>
 </body>
 </html>
